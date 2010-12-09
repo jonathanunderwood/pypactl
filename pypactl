@@ -1,0 +1,95 @@
+#!/usr/bin/env python                                                                                                                                      
+# -*- coding: utf-8 -*-                                                                                                                                    
+
+import sys
+from palib import PulseObj, \
+                                      PulseSink, \
+                                      PulseSinkInfo, \
+                                      PulseSinkInputInfo, \
+                                      PulseVolume
+
+pulse = PulseObj("pactl.py", None, True)
+
+# custom channel volumes for volume
+# front left, front right, rear left, rear right, front center, subwoofer
+vol4channels = [70,70,90,90,100,60]
+
+def incVolume_map(vol, inc, chmap):
+  vol_max=max(vol.values)
+  vol_max=int(vol_max+inc)
+  
+  for i in range(0,vol.channels):
+    vol.values[i]=chmap[i]*vol_max/100
+  
+  return vol
+  
+def setVolume_map(vol, inc, chmap):
+  for i in range(0,vol.channels):
+    vol.values[i]=chmap[i]*vol/100
+  
+  return vol
+
+if sys.argv[1] == 'sink':
+  sink_id=int(sys.argv[2])
+
+  sinks=pulse.pulse_sink_list()
+  selected_sink=sinks[sink_id]
+
+  if sys.argv[3] == 'toggle':
+      if selected_sink.mute == 0: 
+	pulse.pulse_mute_sink(selected_sink.index)
+      else:
+	pulse.pulse_unmute_sink(selected_sink.index)
+	
+  elif sys.argv[3] == 'incvolume':
+    vol_step=int(sys.argv[4])
+    curvol = selected_sink.volume
+    newvol=incVolume_map(curvol,int(vol_step),vol4channels)
+    pulse.pulse_set_sink_volume(selected_sink.index,newvol)
+
+  elif sys.argv[3] == 'setvolume':
+    curvol = selected_sink.volume
+    newvol=incVolume_map(curvol,int(sys.argv[4]),vol4channels)
+    pulse.pulse_set_sink_volume(selected_sink.index,newvol)
+
+elif sys.argv[1] == 'test':
+  curvol = selected_sink.volume
+  print curvol.values
+  
+  curvol_max=max(curvol.values)
+  
+  print curvol_max
+  curvol_max=int(curvol_max+volstep)
+  print curvol_max
+  
+  for i in range(0,curvol.channels):
+    curvol.values[i]=channel_map[i]*curvol_max/100
+  
+  print "---";
+  
+  print curvol.values
+  #print curvol
+  pulse.pulse_set_sink_volume(selected_sink.index,curvol)
+  
+elif sys.argv[1] == 'debug':
+  #print selected_sink.channel_map.channels
+  #channles_map = selected_sink.channel_map.map
+  #for ch in channles_map:
+    #print ch
+
+  curvol = selected_sink.volume
+  #print curvol.channel
+  
+  #for i in range(0,curvol.channels-1):
+    #print curvol.values[i]
+  #curvol.printDebug()
+  #print volume.channels
+  #curvol.incVolume(int(2))
+  #curvol.incVolume(int(-2))
+
+  #pulse.pulse_set_sink_volume(selected_sink.index,curvol)
+  #pulse_set_sink_input_volume
+  sinks_all=pulse.pulse_sink_list()
+  for source in sinks_all:
+    print source
+  #print selected_sink.index
