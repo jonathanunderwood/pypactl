@@ -54,11 +54,11 @@ class PulseSource:
     return
 
   def printDebug(self):
-    print "self.index:", self.index
-    print "self.name:", self.name
-    print "self.mute:", self.mute
-    print "self.volume:", self.volume
-    print "self.client:", self.client
+    print("self.index:", self.index)
+    print("self.name:", self.name)
+    print("self.mute:", self.mute)
+    print("self.volume:", self.volume)
+    print("self.client:", self.client)
     return
 
 ################################################################################
@@ -114,19 +114,19 @@ class PulseSourceInfo(PulseSource):
   ###
 
   def printDebug(self):
-    print "PulseSourceInfo"
+    print("PulseSourceInfo")
     PulseSource.printDebug(self)
-    print "self.description", self.description
-    print "self.sample_spec", self.sample_spec
-    print "self.channel_map", self.channel_map
-    print "self.owner_module", self.owner_module
-    print "self.monitor_of_sink", self.monitor_of_sink
-    print "self.monitor_of_sink_name", self.monitor_of_sink_name
-    print "self.latency", self.latency
-    print "self.driver", self.driver
-    print "self.flags", self.flags
-    print "self.proplist", self.proplist
-    print "self.configured_latency", self.configured_latency
+    print("self.description", self.description)
+    print("self.sample_spec", self.sample_spec)
+    print("self.channel_map", self.channel_map)
+    print("self.owner_module", self.owner_module)
+    print("self.monitor_of_sink", self.monitor_of_sink)
+    print("self.monitor_of_sink_name", self.monitor_of_sink_name)
+    print("self.latency", self.latency)
+    print("self.driver", self.driver)
+    print("self.flags", self.flags)
+    print("self.proplist", self.proplist)
+    print("self.configured_latency", self.configured_latency)
     return
 
   ###
@@ -165,18 +165,17 @@ class PulseSourceOutputInfo(PulseSource):
   ###
 
   def printDebug(self):
-    print "PulseSourceInputInfo"
+    print("PulseSourceInputInfo")
     PulseSource.printDebug(self)
-
-    print "self.owner_module:", self.owner_module
-    print "self.client_id:", self.client_id
-    print "self.source:", self.source
-    print "self.sample_spec:", self.sample_spec
-    print "self.channel_map:", self.channel_map
-    print "self.buffer_usec:", self.buffer_usec
-    print "self.source_usec:", self.source_usec
-    print "self.resample_method:", self.resample_method
-    print "self.driver:", self.driver
+    print("self.owner_module:", self.owner_module)
+    print("self.client_id:", self.client_id)
+    print("self.source:", self.source)
+    print("self.sample_spec:", self.sample_spec)
+    print("self.channel_map:", self.channel_map)
+    print("self.buffer_usec:", self.buffer_usec)
+    print("self.source_usec:", self.source_usec)
+    print("self.resample_method:", self.resample_method)
+    print("self.driver:", self.driver)
 
   ###
 

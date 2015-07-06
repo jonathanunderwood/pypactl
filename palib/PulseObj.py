@@ -42,13 +42,14 @@ class PulseObj:
   ##############################################################################
 
   def __init__(self, clientName = 'Unknown (Python)',
-                     server = None, retry = False):
+                     server = None, retry = False, signals = False):
     "Initialise pulseaudio connection"
 
     # Variables
     self.server       = server
     self.mainloop     = None
     self.mainloop_api = None
+    self.running      = False
     self.context      = None
     self.ret          = None
     self.retry        = retry
@@ -73,20 +74,21 @@ class PulseObj:
 
     self.mainloop_api = pa_mainloop_get_api(self.mainloop)
 
-    #
-    # Signal binding
-    #
-    r = pa_signal_init(self.mainloop_api)
+    if signals:
+      #
+      # Signal binding
+      #
+      r = pa_signal_init(self.mainloop_api)
 
-    if r != 0:
-      # FIXME
-      print "FIXME Do something. Something is wrong"
+      if r != 0:
+        # FIXME
+        print("FIXME Do something. Something is wrong")
 
-    # SIGINT
-    pa_signal_new(2, self.PA_SIGNAL_CB, None)
+      # SIGINT
+      pa_signal_new(2, self.PA_SIGNAL_CB, None)
 
-    # SIGTERM
-    pa_signal_new(15, self.PA_SIGNAL_CB, None)
+      # SIGTERM
+      pa_signal_new(15, self.PA_SIGNAL_CB, None)
 
     #
     # Context creating
@@ -180,6 +182,31 @@ class PulseObj:
 
 
     #print "py_state_cb:", pa_strerror(pa_context_errno(c))
+    return 0
+
+  ###
+
+  def py_server_info_cb(self, c, server_info, *extras):
+    self.complete_action()
+
+    si = server_info[0]
+    data = {
+           'user_name'              : si.user_name,
+           'host_name'              : si.host_name,
+           'server_version'         : si.server_version,
+           'server_name'            : si.server_name,
+           #'sample_spec'
+           'default_sink_name'      : si.default_sink_name,
+           'default_source_name'    : si.default_source_name,
+           'cookie'                 : si.cookie,
+           #'channel_map'
+           }
+
+    if self.data == None:
+      self.data = [ data ]
+    else:
+      self.data.append(data)
+
     return 0
 
   ###
@@ -309,8 +336,10 @@ class PulseObj:
 
     #print "pulse_disconnect: Disconnecting"
     pa_context_disconnect(self.context)
-    pa_mainloop_free(self.mainloop)
-    return
+    if self.running:
+      pa_mainloop_free(self.mainloop)
+      self.mainloop = None
+      self.running = False
 
   ###
 
@@ -438,6 +467,27 @@ class PulseObj:
     return return_data
 
   ###
+
+  def pulse_server_info(self):
+    "Get info from the server"
+
+    self.start_action()
+
+    SERVER_INFO_CB = PA_SERVER_INFO_CB_T(self.py_server_info_cb)
+
+    self.operation = pa_context_get_server_info(self.context,
+                                                SERVER_INFO_CB,
+                                                None)
+
+    self.pulse_iterate()
+
+    return_data = self.data
+    self.data = None
+
+    return return_data
+
+  ###
+
 
   def pulse_sink_input_mute(self, index, mute):
     "Mute one stream by index"
@@ -588,6 +638,7 @@ class PulseObj:
   def pulse_run(self):
     self.ret = pointer(c_int(0))
 
+    self.running      = True
     #pa_mainloop_iterate(self.mainloop, 11, self.ret)
     pa_mainloop_run(self.mainloop, self.ret)
     return

@@ -33,8 +33,8 @@ class PulseClient:
   ###
 
   def printDebug(self):
-    print "self.index:", self.index
-    print "self.name:", self.name
+    print("self.index:", self.index)
+    print("self.name:", self.name)
     return
 
   ###
@@ -57,10 +57,10 @@ class PulseClientCtypes(PulseClient):
   ###
 
   def printDebug(self):
-    print "PulseClientCtypes"
+    print("PulseClientCtypes")
     PulseClient.printDebug(self)
-    print "self.owner_module:", self.owner_module
-    print "self.driver:", self.driver
+    print("self.owner_module:", self.owner_module)
+    print("self.driver:", self.driver)
     #print "self.proplist:", self.proplist
     return
 
